@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - kernelridge
+      - main
   workflow_dispatch:
 
 jobs:
