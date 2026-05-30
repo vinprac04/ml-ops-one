@@ -1,42 +1,38 @@
+"""
+train.py - Train a Decision Tree Regressor on the Boston Housing dataset.
+"""
+
 import logging
+
 from sklearn.tree import DecisionTreeRegressor
-from misc import (
-    load_data,
-    preprocess_data,
-    train_model,
-    evaluate_model,
-    display_results,
-)
+from misc import load_data, evaluate_model_cv, display_results
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(levelname)s - %(message)s"
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
 )
-
 logger = logging.getLogger(__name__)
 
 
 def main():
-    logger.info("Starting DecisionTreeRegressor pipeline")
+    logger.info("="*60)
+    logger.info("Starting train.py — DecisionTreeRegressor pipeline")
+    logger.info("="*60)
 
+    logger.info("Step 1: Loading Boston Housing dataset...")
     df = load_data()
 
-    X_train, X_test, y_train, y_test = preprocess_data(df)
+    logger.info("Step 2: Preparing features and target...")
+    X = df.drop(columns=['MEDV'])
+    y = df['MEDV']
 
-    model = DecisionTreeRegressor(
-        max_depth=5,
-        min_samples_split=10,
-        min_samples_leaf=4,
-        random_state=42
-    )
+    logger.info("Step 3: Evaluating DecisionTreeRegressor with 5-fold cross-validation...")
+    model = DecisionTreeRegressor(random_state=42)
+    avg_mse, fold_scores = evaluate_model_cv(model,df, n_splits=5)
+    display_results("DecisionTreeRegressor", avg_mse)
 
-    model = train_model(model, X_train, y_train)
-
-    mse = evaluate_model(model, X_test, y_test)
-
-    display_results("DecisionTreeRegressor", mse)
-
-    logger.info("Training pipeline completed successfully")
+    logger.info("Pipeline complete for DecisionTreeRegressor")
 
 
 if __name__ == "__main__":
